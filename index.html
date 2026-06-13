@@ -215,6 +215,7 @@
     <div class="scores">
       <div class="score-chip me"><span class="dot"></span><span id="score-me">0</span></div>
       <div class="score-chip them"><span class="dot"></span><span id="score-them">0</span></div>
+      <button onclick="logout()" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;padding:2px 4px;-webkit-tap-highlight-color:transparent" title="Salir">⏏</button>
     </div>
   </header>
 
@@ -369,6 +370,10 @@ window.joinRoom = async () => {
       });
     }
   });
+
+  // save session so app reopens directly
+  localStorage.setItem('pb-name', myName);
+  localStorage.setItem('pb-room', roomId);
 
   // go to game
   document.getElementById('screen-setup').classList.remove('active');
@@ -652,6 +657,23 @@ function showToast(msg) {
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2200);
 }
+
+// ─── AUTO LOGIN ──────────────────────────────────────────────────────
+(async () => {
+  const savedName = localStorage.getItem('pb-name');
+  const savedRoom = localStorage.getItem('pb-room');
+  if (savedName && savedRoom) {
+    document.getElementById('inp-name').value = savedName;
+    document.getElementById('inp-room').value = savedRoom;
+    await joinRoom();
+  }
+})();
+
+window.logout = () => {
+  localStorage.removeItem('pb-name');
+  localStorage.removeItem('pb-room');
+  location.reload();
+};
 
 // ─── PWA ─────────────────────────────────────────────────────────────
 if ('serviceWorker' in navigator) {
